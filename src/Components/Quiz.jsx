@@ -1,41 +1,43 @@
 import React from "react";
 import "../quiz.css";
 import quizes from "../quiz_questions.json";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 const Quiz = () => {
-    const labelRef = useRef("");
     const questionRef = useRef("");
-    let count = 1;
+    const [count, setCount] = useState(0);
     function handleNext()
     {
-        if(count <=9)
+        if(count < quizes.length - 1)
+        {
+            setCount(count+ 1);
+        }
+    }
+
+    useEffect(() => {
+        if (questionRef.current) 
         {
             questionRef.current.textContent = `${count + 1}. ${quizes[count].question}`;
         }
-        count++;
-    }
-
-    useEffect(()=>{
-        questionRef.current.textContent = `1. ${quizes[0].question}`;
-    });
+    }, [count]);
   return (
     <div className="quiz-container" id="quiz">
         <div className="quiz-header">
             <ul>
                 <h2 id="question" ref={questionRef}></h2>
                 <ul>
-                    <li>
-                        <input type="radio" name="answer" className="answer" />
-                        <label ref={labelRef}>HELLO</label>
-                    </li>
+                    {quizes[count].options.map((option, index) => (
+                        <li key={index}>
+                            <input type="radio" name="answer" className="answer" id={`option${index}`} />
+                            <label htmlFor={`option${index}`}>{option}</label>
+                        </li>
+                    ))}
                 </ul>
             </ul>
-            <div className="buttons-div">
-                <button id="submit" onClick={handleNext}>Next</button>
-                {count >= 10 ?? 
-                    <button id="get">Submit and Show Result</button>
-                }
-            </div>
+            {count < quizes.length - 1 ? (
+                <button onClick={handleNext}>Next</button>
+                ) : (
+                <button>Show Results</button>
+            )}
         </div>
     </div>
   );
